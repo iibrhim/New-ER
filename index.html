@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفحص الفني والتشغيلي - مبنى الطوارئ الجديد</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    
+    <style>
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+            border-radius: 16px;
+        }
+        .critical-card {
+            background: linear-gradient(135deg, rgba(255, 241, 242, 0.9) 0%, rgba(254, 226, 226, 0.9) 100%);
+            border-right: 4px solid #ef4444;
+        }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        tr { transition: all 0.2s ease-in-out; }
+        tr:hover { background-color: rgba(255,255,255,0.9); transform: scale(1.001); }
+    </style>
+</head>
+<body class="text-slate-800 p-4 md:p-8">
+
+    <header class="flex flex-col md:flex-row justify-between items-center mb-8 glass-card p-6">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-blue-700 text-white rounded-xl shadow-lg">
+                <i class="ph ph-buildings text-3xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">تجمع الأحساء الصحي | مستشفى الملك فهد بالهفوف | إدارة الصيانة العامة</h1>
+                <p class="text-slate-500 font-semibold text-sm mt-1">التقرير الشامل لملاحظات الفحص الفني والتشغيلي - مبنى الطوارئ الجديد</p>
+            </div>
+        </div>
+        <div class="mt-4 md:mt-0 flex gap-4 items-center">
+            <button onclick="window.print()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-2 px-4 rounded-xl shadow-sm transition flex items-center gap-2">
+                <i class="ph ph-printer text-lg"></i> تصدير التقرير
+            </button>
+            <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-100 min-w-[200px]">
+                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-sm font-bold text-slate-600" id="realTimeClock"></span>
+            </div>
+        </div>
+    </header>
+
+    <section class="mb-10">
+        <div class="glass-card p-6 border-r-4 border-blue-600">
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <i class="ph-fill ph-clipboard-text text-blue-600 text-2xl"></i>
+                ملخص تنفيذي لأبرز الملاحظات حسب الأقسام:
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-700">
+                <div class="bg-white/50 p-4 rounded-lg">
+                    <h3 class="font-black text-stone-700 mb-2 border-b border-stone-200 pb-1">القسم المدني :</h3>
+                    <ul class="list-disc list-inside space-y-2 font-semibold">
+                        <li>رصد تشققات في الجدران وفتحات تحتاج إلى إغلاق في عدة غرف وممرات.</li>
+                        <li>أرضيات "الفينيل"، وإطارات الأبواب، والأسقف بحاجة إلى صيانة شاملة.</li>
+                        <li>نواقص في التمديدات الصحية وعدم تثبيت خلاطات المغاسل.</li>
+                    </ul>
+                </div>
+                <div class="bg-white/50 p-4 rounded-lg">
+                    <h3 class="font-black text-indigo-700 mb-2 border-b border-indigo-200 pb-1">قسم الإلكترونيات :</h3>
+                    <ul class="list-disc list-inside space-y-2 font-semibold">
+                        <li><span class="text-rose-600 font-bold">أنظمة السلامة:</span> نظام إنذار الحريق لا يعمل وغير متصل بلوحات التحكم الخاصة بالمستشفى، ولا توجد إشارات (IP address) لأجهزة النظام.</li>
+                        <li><span class="text-rose-600 font-bold">الأنظمة الطبية التشغيلية:</span> نظام استدعاء الممرضات (Nurse Call) لا يعمل بالكامل.</li>
+                        <li>كاميرات المراقبة غير مربوطة بالنظام المركزي للمستشفى ، وتوجد نواقص ومشاكل تشغيلية في أبواب الغرف الحساسة (غرف العزل والعمليات).</li>
+                    </ul>
+                </div>
+                <div class="bg-white/50 p-4 rounded-lg">
+                    <h3 class="font-black text-amber-600 mb-2 border-b border-amber-200 pb-1">قسم الكهرباء :</h3>
+                    <ul class="list-disc list-inside space-y-2 font-semibold">
+                        <li>وجود عدد كبير من الأسلاك الكهربائية المكشوفة مما يشكل خطراً على السلامة.</li>
+                        <li>غياب علامات التسمية والترقيم للوحات والغرف الكهربائية.</li>
+                        <li>ملاحظات على سوء تثبيت وحدات الإنارة ، والتوجيه الخاطئ للوحات مخارج الطوارئ ، وعدم اكتمال الأعمال في الغرفة الكهربائية الرئيسية.</li>
+                    </ul>
+                </div>
+                <div class="bg-white/50 p-4 rounded-lg">
+                    <h3 class="font-black text-rose-700 mb-2 border-b border-rose-200 pb-1">قسم الميكانيكا :</h3>
+                    <ul class="list-disc list-inside space-y-2 font-semibold">
+                        <li><span class="text-rose-600 font-bold">أنظمة مكافحة الحريق:</span> شبكات الرش التلقائي والـ (Pre-Action) غير مزودة بالمياه ، ولم يتم توريد أو تركيب نظام الغاز النظيف (FM200).</li>
+                        <li><span class="text-rose-600 font-bold">نظام الغازات الطبية :</span> الشبكة غير مفعلة ؛ حيث لم يتم ربط نظامي الأكسجين والشفط (Vacuum)، ولم تُورد ضواغط الهواء الطبي أو لوحات الغازات الطبية (AVSU).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-6 p-4 bg-rose-50 rounded-lg border border-rose-200 shadow-sm">
+                <p class="font-bold text-rose-800 flex items-center gap-2">
+                    <i class="ph-fill ph-warning-circle text-2xl animate-pulse"></i>
+                    نظراً لأهمية وحساسية الأنظمة المذكورة ، وخاصة أنظمة مكافحة الحريق والغازات الطبية ، نوصي بتوجيه الجهات المعنية والمقاولين لمعالجة هذه القصور وفق خطة زمنية.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-10">
+        <div class="flex items-center gap-2 mb-4">
+            <i class="ph-fill ph-chart-pie-slice text-emerald-600 text-2xl"></i>
+            <h2 class="text-xl font-bold text-slate-800">التحليل البياني للملاحظات (%)</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div class="glass-card p-4 flex flex-col justify-between">
+                <h3 class="text-center font-black text-sm text-slate-600 mb-2 bg-slate-100 py-1 rounded">الملاحظات حسب القسم</h3>
+                <div class="relative h-48 w-full"><canvas id="chartDept"></canvas></div>
+            </div>
+            <div class="glass-card p-4 flex flex-col justify-between">
+                <h3 class="text-center font-black text-sm text-slate-600 mb-2 bg-slate-100 py-1 rounded">التصنيف (الأولوية)</h3>
+                <div class="relative h-48 w-full"><canvas id="chartPriority"></canvas></div>
+            </div>
+            <div class="glass-card p-4 flex flex-col justify-between">
+                <h3 class="text-center font-black text-sm text-slate-600 mb-2 bg-slate-100 py-1 rounded">حالة النظام</h3>
+                <div class="relative h-48 w-full"><canvas id="chartState"></canvas></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-10">
+        <div class="flex items-center gap-2 mb-4">
+            <i class="ph-fill ph-warning-circle text-rose-600 text-2xl animate-pulse"></i>
+            <h2 class="text-xl font-bold text-slate-800">الملاحظات الحرجة (ملاحظات السلامة والأنظمة الحرجة)</h2>
+        </div>
+        <div class="glass-card critical-card overflow-hidden">
+            <div class="overflow-x-auto max-h-[400px]">
+                <table class="min-w-full text-right">
+                    <thead class="bg-rose-100/80 text-rose-800 sticky top-0 backdrop-blur-md z-10 shadow-sm">
+                        <tr>
+                            <th class="px-6 py-3 font-black text-sm">م</th>
+                            <th class="px-6 py-3 font-black text-sm">القسم</th>
+                            <th class="px-6 py-3 font-black text-sm">الموقع</th>
+                            <th class="px-6 py-3 font-black text-sm">وصف الملاحظة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="criticalTableBody" class="divide-y divide-rose-200/50"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-4 gap-4">
+            <div class="flex items-center gap-2">
+                <i class="ph-fill ph-table text-blue-600 text-2xl"></i>
+                <h2 class="text-xl font-bold text-slate-800">السجل الشامل للملاحظات "جميع الأقسام"</h2>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                <div class="relative">
+                    <i class="ph ph-magnifying-glass absolute top-1/2 right-3 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="بحث شامل (كلمة، موقع، رقم)..." 
+                           class="pl-4 pr-10 py-2.5 w-full md:w-72 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm font-semibold text-slate-700">
+                </div>
+                
+                <div class="relative">
+                    <i class="ph ph-funnel absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                    <select id="deptFilter" class="pl-4 pr-10 py-2.5 w-full md:w-48 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none shadow-sm cursor-pointer font-bold text-slate-700">
+                        <option value="الكل">جميع الأقسام</option>
+                        <option value="الميكانيكا">الميكانيكا</option>
+                        <option value="الإلكترونيات">الإلكترونيات</option>
+                        <option value="الكهرباء">الكهرباء</option>
+                        <option value="المدني">المدني</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card overflow-hidden">
+            <div class="bg-white/60 px-6 py-3 border-b border-slate-200/60 flex justify-between items-center">
+                <span class="text-sm font-bold text-slate-500">يتم عرض البيانات استناداً لمعايير البحث المحددة (قسم، كلمة، موقع، رقم)</span>
+                <span id="resultsCount" class="bg-blue-100 text-blue-800 text-xs font-black px-3 py-1 rounded-lg"></span>
+            </div>
+            <div class="overflow-x-auto h-[700px]">
+                <table class="min-w-full text-right relative">
+                    <thead class="bg-slate-100/80 sticky top-0 backdrop-blur-md z-10 shadow-sm">
+                        <tr>
+                            <th class="px-6 py-4 font-black text-sm text-slate-700">م</th>
+                            <th class="px-6 py-4 font-black text-sm text-slate-700">القسم</th>
+                            <th class="px-6 py-4 font-black text-sm text-slate-700">الموقع</th>
+                            <th class="px-6 py-4 font-black text-sm text-slate-700">الملاحظة</th>
+                            <th class="px-6 py-4 font-black text-sm text-slate-700 text-center">حالة النظام</th>
+                            <th class="px-6 py-4 font-black text-sm text-slate-700 text-center">التصنيف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allTableBody" class="divide-y divide-slate-200/50 bg-white/30"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const records = [
+            // --- قسم الميكانيكا ---
+            { id: 'M-1', dept: 'الميكانيكا', loc: 'نظام مكافحة الحريق (Fire Fighting)', note: 'لم يتم توصيل مياه للنظام', systemState: 'لا يعمل', priority: 'حرجة' },
+            { id: 'M-2', dept: 'الميكانيكا', loc: 'نظام الرش التلقائي (Sprinkler)', note: 'لم يتم توصيل مياه للنظام', systemState: 'لا يعمل', priority: 'حرجة' },
+            { id: 'M-3', dept: 'الميكانيكا', loc: 'نظام الغازات النظيفة FM200', note: 'لم يتم توريده وتركيبه', systemState: 'لا يعمل', priority: 'حرجة' },
+            { id: 'M-4', dept: 'الميكانيكا', loc: 'نظام مرشات مسبق التشغيل (Pre-Action)', note: 'لم يتم توصيل المياه للنظام وتفعيله', systemState: 'لا يعمل', priority: 'حرجة' },
+            { id: 'M-5', dept: 'الميكانيكا', loc: 'نظام الغازات الطبية', note: 'الاكسجين والشفط لم يتم ربطهما، ولم يتم توريد ضواغط الهواء وتفعيل النيتروز', systemState: 'لا يعمل', priority: 'حرجة' },
+            { id: 'M-6', dept: 'الميكانيكا', loc: 'لوحات غازات طبية AVSU', note: 'لم يتم توريد اللوحات حتى الآن وتوصيلها', systemState: 'لا يعمل', priority: 'حرجة' },
+
+            // --- قسم الإلكترونيات ---
+            { id: 'E-1', dept: 'الإلكترونيات', loc: 'الباب الرئيسي', note: 'لا يوجد باب، مغناطيس، أو دفاش الكتروني', systemState: 'مفقود', priority: 'عالية' },
+            { id: 'E-2', dept: 'الإلكترونيات', loc: 'باب قسم التنويم', note: 'لا يوجد باب، مغناطيس، أو دفاش الكتروني', systemState: 'مفقود', priority: 'عالية' },
+            { id: 'E-3', dept: 'الإلكترونيات', loc: 'غرفه رقم 3 مرضى', note: 'نداء التمريض لدوره المياه بحاجه الى تركيب', systemState: 'غير مكتمل', priority: 'عالية' },
+            { id: 'E-4', dept: 'الإلكترونيات', loc: 'غرفه العزل رقم 13', note: 'نداء التمريض لدوره المياه بحاجه الى تركيب', systemState: 'غير مكتمل', priority: 'عالية' },
+            { id: 'E-5', dept: 'الإلكترونيات', loc: 'مدخل استقبال التمريض', note: 'لا يوجد باب، مغناطيس، أو دفاش الكتروني', systemState: 'مفقود', priority: 'عالية' },
+            { id: 'E-6', dept: 'الإلكترونيات', loc: 'مدخل مقابل استقبال التمريض', note: 'لا يوجد باب، مغناطيس، أو دفاش الكتروني', systemState: 'مفقود', priority: 'عالية' },
+            { id: 'E-7', dept: 'الإلكترونيات', loc: 'غرفه العزل رقم 47', note: 'الباب لا يعمل، لا يوجد ازرار دخول، لم يتم توصيل الباب الكترونيا', systemState: 'لا يعمل', priority: 'عالية' },
+            { id: 'E-8', dept: 'الإلكترونيات', loc: 'غرفه عزل رقم 47', note: 'مدخل ريموت نداء الممرضات مكسور', systemState: 'تالف', priority: 'عالية' },
+            { id: 'E-9', dept: 'الإلكترونيات', loc: 'مدخل غرفه الإفاقة', note: 'باب الكتروني لا يعمل', systemState: 'لا يعمل', priority: 'عالية' },
+            { id: 'E-10', dept: 'الإلكترونيات', loc: 'غرفه العمليات الكبرى رقم 95', note: 'زر الباب لايعمل', systemState: 'لا يعمل', priority: 'عالية' },
+            { id: 'E-11', dept: 'الإلكترونيات', loc: 'غرفه عمليات المناظير 1 (90)', note: 'زر الباب الرئيسي لايعمل، الباب الجانبي يعمل تلقائياً بخلل', systemState: 'خلل', priority: 'عالية' },
+            { id: 'E-12', dept: 'الإلكترونيات', loc: 'غرفه عمليات أعصاب (79)', note: 'الباب الجانبي لا يعمل', systemState: 'لا يعمل', priority: 'عالية' },
+            { id: 'E-13', dept: 'الإلكترونيات', loc: 'غرفه عمليات العظام (81)', note: 'الباب الجانبي لا يعمل', systemState: 'لا يعمل', priority: 'عالية' },
+            { id: 'E-14', dept: 'الإلكترونيات', loc: 'عمليات المناظير 2 (87)', note: 'أزرار الباب الرئيسي بحاجه الى تركيب', systemState: 'غير مكتمل', priority: 'عالية' },
+            { id: 'E-15', dept: 'الإلكترونيات', loc: 'مدخل مكتب طبيب التخدير', note: 'لا يوجد باب، مغناطيس، أو دفاش الكتروني', systemState: 'مفقود', priority: 'متوسطة' },
+            { id: 'E-16', dept: 'الإلكترونيات', loc: 'الممر الرئيسي مقابل غرفه 5', note: 'كاسر الزجاج (MCP) مكسور', systemState: 'تالف', priority: 'حرجة' },
+            { id: 'E-17', dept: 'الإلكترونيات', loc: 'غرفه عمليات عظام 81', note: 'كاسر الزجاج (MCP) مكسور', systemState: 'تالف', priority: 'حرجة' },
+            { id: 'E-18', dept: 'الإلكترونيات', loc: 'تكنولوجيا المعلومات 54', note: 'لا یوجد کاشف دخان', systemState: 'مفقود', priority: 'حرجة' },
+            { id: 'E-19', dept: 'الإلكترونيات', loc: 'القسم بالكامل (ملاحظات عامة)', note: 'نظام الساعات والاستدعاء والكاميرات وإنذار الحريق لا تعمل بشكل كامل أو غير مربوطة', systemState: 'معطل', priority: 'حرجة' },
+
+            // --- قسم الكهرباء ---
+            { id: 'P-1', dept: 'الكهرباء', loc: 'NURSING STATION', note: 'إنارة لا تعمل / أسلاك كهربائية مكشوفة', systemState: 'خطورة', priority: 'حرجة' },
+            { id: 'P-2', dept: 'الكهرباء', loc: 'MAIN CORRIDOR', note: 'إنارة لا تعمل ومثبتة بشكل غير سليم', systemState: 'متابعة', priority: 'متوسطة' },
+            { id: 'P-3', dept: 'الكهرباء', loc: 'NURSING STATION', note: 'أسلاك كهربائية مكشوفة (متكرر عدة مرات)', systemState: 'خطورة', priority: 'حرجة' },
+            { id: 'P-4', dept: 'الكهرباء', loc: 'OR ROOM-2', note: 'إنارات مثبتة بشكل غير سليم', systemState: 'متابعة', priority: 'متوسطة' },
+            { id: 'P-5', dept: 'الكهرباء', loc: 'OR ALL ROOMS', note: 'لا يوجد علامات تسمية وترقيم للوحات', systemState: 'نواقص', priority: 'عادية' },
+            { id: 'P-6', dept: 'الكهرباء', loc: 'CORRIDOR', note: 'موضع واتجاه لوحات مخرج الطوارئ غير سليم', systemState: 'خلل', priority: 'عالية' },
+            { id: 'P-7', dept: 'الكهرباء', loc: 'OR ROOM-1/4/5', note: 'إنارات مثبتة بشكل غير سليم', systemState: 'متابعة', priority: 'متوسطة' },
+            { id: 'P-8', dept: 'الكهرباء', loc: 'ALL UPS', note: 'لا يوجد علامات تسمية وترقيم', systemState: 'نواقص', priority: 'عادية' },
+            { id: 'P-9', dept: 'الكهرباء', loc: 'GF-30', note: 'بريزة كهربائية بحاجة الى غطاء ومثبتة بشكل غير سليم', systemState: 'متابعة', priority: 'متوسطة' },
+            { id: 'P-10', dept: 'الكهرباء', loc: 'GF-27/26/23/21/19/17', note: 'أسلاك كهربائية مكشوفة وإنارة لا تعمل', systemState: 'خطورة', priority: 'حرجة' },
+            { id: 'P-11', dept: 'الكهرباء', loc: 'GF-17/10/7/5/3', note: 'بحاجة الى غطاء سليم عازل للكهرباء', systemState: 'خطورة', priority: 'عالية' },
+            { id: 'P-12', dept: 'الكهرباء', loc: 'GF-12/11/10/7/3/1', note: 'أسلاك كهربائية مكشوفة', systemState: 'خطورة', priority: 'حرجة' },
+            { id: 'P-13', dept: 'الكهرباء', loc: 'MOST OF DEPARTMENTS', note: 'كيبل إنارة تم تمديده بشكل غير مناسب', systemState: 'خلل', priority: 'متوسطة' },
+            { id: 'P-14', dept: 'الكهرباء', loc: 'OUTSIDE LADDER TR-6', note: 'غطاء الكيبل مفتوح بالزاوية – بحاجة لاغلاق محكم', systemState: 'خطورة', priority: 'عالية' },
+            { id: 'P-15', dept: 'الكهرباء', loc: 'Main electrical room', note: 'لم يتم انهاء جميع الاعمال الكهربائية', systemState: 'غير مكتمل', priority: 'حرجة' },
+            { id: 'P-16', dept: 'الكهرباء', loc: 'TR-6 ELECTRICAL ROOM', note: 'كيبل كهربائي رئيسي مكشوف', systemState: 'خطورة بالغة', priority: 'حرجة' },
+
+            // --- قسم المدني ---
+            { id: 'C-1', dept: 'المدني', loc: 'GF-31 / GF-105 / الممر / GF-34', note: 'صيانة أرضيات الفينيل', systemState: 'صيانة', priority: 'متوسطة' },
+            { id: 'C-2', dept: 'المدني', loc: 'GF-31 / GF-98 / GF-95', note: 'فريم الباب بحاجة إلى صيانة', systemState: 'صيانة', priority: 'عادية' },
+            { id: 'C-3', dept: 'المدني', loc: 'GF-105 / GF-03 / GF-30 / GF-62 / GF-261', note: 'بحاجة لإغلاق فتحة بالجدار', systemState: 'غير مكتمل', priority: 'متوسطة' },
+            { id: 'C-4', dept: 'المدني', loc: 'GF-28 / الممر / GF-105 / GF-53', note: 'صيانة السيلنق (الأسقف)', systemState: 'صيانة', priority: 'متوسطة' },
+            { id: 'C-5', dept: 'المدني', loc: 'GF-05 / GF-23 / GF-21 / GF-19 / GF-17 / GF-16 / GF-26', note: 'تشققات (تشلخات) بالجدار', systemState: 'صيانة', priority: 'متوسطة' },
+            { id: 'C-6', dept: 'المدني', loc: 'GF-27', note: 'بحاجة لدهان الغرفة + قفل الباب', systemState: 'نواقص', priority: 'عادية' },
+            { id: 'C-7', dept: 'المدني', loc: 'GF-71-9', note: 'بحاجة إلى شطاف / محبس زاوية', systemState: 'نواقص', priority: 'عادية' },
+            { id: 'C-8', dept: 'المدني', loc: 'GF-21-28-23', note: 'لايوجد تمديدات مياه للشطاف', systemState: 'غير مكتمل', priority: 'متوسطة' },
+            { id: 'C-9', dept: 'المدني', loc: 'ملاحظة عامة بالقسم', note: 'خلاطات المغاسل غير مثبتة، بحاجة لمراجعة دهانات وأرضيات', systemState: 'متابعة', priority: 'متوسطة' }
+        ];
+
+        const deptIcons = {
+            'الميكانيكا': '<i class="ph-fill ph-nut text-rose-500 text-lg"></i>',
+            'الإلكترونيات': '<i class="ph-fill ph-cpu text-indigo-500 text-lg"></i>',
+            'الكهرباء': '<i class="ph-fill ph-lightning text-amber-500 text-lg"></i>',
+            'المدني': '<i class="ph-fill ph-wall text-stone-500 text-lg"></i>'
+        };
+
+        const getPriorityBadge = (priority) => {
+            const styles = {
+                'حرجة': 'bg-rose-100 text-rose-700 border border-rose-200 font-black',
+                'عالية': 'bg-orange-100 text-orange-700 border border-orange-200 font-bold',
+                'متوسطة': 'bg-blue-100 text-blue-700 border border-blue-200 font-bold',
+                'عادية': 'bg-slate-100 text-slate-600 border border-slate-200 font-bold'
+            };
+            const icon = priority === 'حرجة' ? '<i class="ph-fill ph-warning-circle mr-1 text-sm"></i>' : '';
+            return `<span class="px-3 py-1 flex items-center justify-center w-fit mx-auto rounded-lg text-xs ${styles[priority]} shadow-sm">${icon}${priority}</span>`;
+        };
+
+        function renderCriticalTable() {
+            const criticalData = records.filter(r => r.priority === 'حرجة');
+            const tbody = document.getElementById('criticalTableBody');
+            
+            tbody.innerHTML = criticalData.map(item => `
+                <tr class="hover:bg-white/70 border-b border-rose-100 transition-colors">
+                    <td class="px-6 py-4 text-sm font-black text-rose-900">${item.id}</td>
+                    <td class="px-6 py-4 text-sm font-bold flex items-center gap-2 text-slate-700">
+                        ${deptIcons[item.dept]} ${item.dept}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-bold text-slate-800" dir="ltr">${item.loc}</td>
+                    <td class="px-6 py-4 text-sm text-rose-700 font-bold leading-relaxed">${item.note}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAllTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterDept = document.getElementById('deptFilter').value;
+            
+            const filteredData = records.filter(item => {
+                const matchSearch = item.loc.toLowerCase().includes(searchTerm) || 
+                                    item.note.toLowerCase().includes(searchTerm) || 
+                                    item.id.toLowerCase().includes(searchTerm);
+                const matchDept = filterDept === 'الكل' || item.dept === filterDept;
+                return matchSearch && matchDept;
+            });
+
+            document.getElementById('resultsCount').innerText = `عدد السجلات: ${filteredData.length}`;
+            const tbody = document.getElementById('allTableBody');
+            
+            if(filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-16 text-center text-slate-400 font-bold text-lg"><i class="ph ph-magnifying-glass text-4xl mb-3 block opacity-50"></i>لا توجد نتائج مطابقة</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filteredData.map(item => `
+                <tr class="border-b border-slate-100/50 transition-colors">
+                    <td class="px-6 py-4 text-sm font-black text-slate-400">${item.id}</td>
+                    <td class="px-6 py-4 text-sm font-bold flex items-center gap-2 text-slate-700">
+                        ${deptIcons[item.dept]} ${item.dept}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-bold text-slate-700" dir="ltr">${item.loc}</td>
+                    <td class="px-6 py-4 text-sm text-slate-600 font-semibold leading-relaxed">${item.note}</td>
+                    <td class="px-6 py-4 text-sm text-center">
+                        <span class="bg-slate-50 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-black border border-slate-200/60 shadow-sm">${item.systemState}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">${getPriorityBadge(item.priority)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function countFrequencies(arr, key) {
+            return arr.reduce((acc, obj) => {
+                acc[obj[key]] = (acc[obj[key]] || 0) + 1;
+                return acc;
+            }, {});
+        }
+
+        Chart.register(ChartDataLabels);
+
+        function initCharts() {
+            const total = records.length;
+            
+            Chart.defaults.font.family = 'Cairo';
+            Chart.defaults.color = '#475569';
+
+            const dataLabelOptions = {
+                color: '#fff',
+                font: { weight: 'bold', size: 14 },
+                formatter: (value) => {
+                    return value + '%';
+                },
+                align: 'center',
+                anchor: 'center',
+                offset: 0,
+                textAlign: 'center'
+            };
+
+            const commonOptions = {
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: {size: 11, weight: 'bold'} } },
+                    tooltip: { 
+                        bodyFont: {family: 'Cairo'},
+                        callbacks: {
+                            label: function(context) { return ' ' + context.label + ': ' + context.parsed + '%'; }
+                        }
+                    },
+                    datalabels: dataLabelOptions
+                }
+            };
+
+            // 1. رسم القسم
+            const deptCounts = countFrequencies(records, 'dept');
+            const deptLabels = Object.keys(deptCounts);
+            const deptData = deptLabels.map(k => ((deptCounts[k]/total)*100).toFixed(1));
+            
+            new Chart(document.getElementById('chartDept'), {
+                type: 'doughnut',
+                data: { labels: deptLabels, datasets: [{ data: deptData, backgroundColor: ['#f43f5e', '#6366f1', '#f59e0b', '#78716c'], borderWidth: 2, borderColor: '#fff' }] },
+                options: commonOptions
+            });
+
+            // 2. رسم التصنيف
+            const priorityCounts = countFrequencies(records, 'priority');
+            const priorityLabels = Object.keys(priorityCounts);
+            const priorityData = priorityLabels.map(k => ((priorityCounts[k]/total)*100).toFixed(1));
+
+            new Chart(document.getElementById('chartPriority'), {
+                type: 'pie',
+                data: { labels: priorityLabels, datasets: [{ data: priorityData, backgroundColor: ['#e11d48', '#ea580c', '#3b82f6', '#94a3b8'], borderWidth: 2, borderColor: '#fff' }] },
+                options: commonOptions
+            });
+
+            // 3. رسم حالة النظام
+            const stateCounts = countFrequencies(records, 'systemState');
+            const stateLabels = Object.keys(stateCounts);
+            const stateData = stateLabels.map(k => ((stateCounts[k]/total)*100).toFixed(1));
+
+            new Chart(document.getElementById('chartState'), {
+                type: 'bar', // التعديل: تحويل الرسم إلى النوع الشريطي
+                data: { 
+                    labels: stateLabels, 
+                    datasets: [{ 
+                        data: stateData, 
+                        backgroundColor: ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#8b5cf6', '#64748b', '#10b981'], 
+                        borderRadius: 4,
+                        borderWidth: 0
+                    }] 
+                },
+                options: { 
+                    ...commonOptions, 
+                    layout: { padding: { top: 20 } },
+                    plugins: { 
+                        ...commonOptions.plugins,
+                        legend: { display: false }, // إخفاء المفتاح لاكتفاء المحور السيني بإظهار التصنيفات
+                        datalabels: {
+                            ...dataLabelOptions,
+                            color: '#475569',
+                            anchor: 'end',
+                            align: 'top',
+                            filter: () => true 
+                        }
+                    },
+                    scales: {
+                        y: { display: false, beginAtZero: true },
+                        x: { grid: { display: false }, ticks: { font: { family: 'Cairo', weight: 'bold', size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('realTimeClock').textContent = timeString;
+        }
+
+        document.getElementById('searchInput').addEventListener('input', renderAllTable);
+        document.getElementById('deptFilter').addEventListener('change', renderAllTable);
+
+        renderCriticalTable();
+        renderAllTable();
+        initCharts();
+        
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
